@@ -12,7 +12,7 @@ const dataModel = {
 }
 
 for (let index = 0; index <= (pageAmount - 1); index++) {
-    var url = funcs.pagesUrl(index);
+    var url = funcs.pagesUrl('ngc', index);
     fetch(url)
         .then((response) => response.text())
         .then((html) => {
@@ -27,11 +27,15 @@ for (let index = 0; index <= (pageAmount - 1); index++) {
                         const $ = cheerio.load(html);
                         let model = {
                             id: gameId,
+                            gcId: '',
                             names: [],
                             codes:[]
                         };
                         $(".panel-heading a small").each((i, t) => {
                             model.names.push($(t).text());
+                        });
+                        $(".table-bordered tr:nth-child(2) td:nth-child(5)").each((i, t) => {
+                            model.gcId = $(t).text();
                         });
                         $(".table-striped tr td div.codID").each((ri, re) => {
                             $(re).remove("input");
@@ -51,9 +55,26 @@ for (let index = 0; index <= (pageAmount - 1); index++) {
                             }
                         });
                         dataModel.games.push(model);
+                        // ---------------------------------------------
                         let data = JSON.stringify(dataModel, null, 4);
                         fs.writeFileSync('cheats.json', data);
+                        // ---------------------------------------------
+                        for (let index = 0; index < dataModel.games.length; index++) {
+                            const game = dataModel.games[index];
+                            if (game.gcId.length >=4) {
+                                let cheatData = "";
+                                for (let i2 = 0; i2 < game.codes.length; i2++) {
+                                    const code = game.codes[i2];
+                                    cheatData = cheatData + code.title + "\n";
+                                    cheatData = cheatData + code.entries + "\n";
+                                    cheatData = cheatData + "\n";
+                                }
+                                fs.writeFileSync(`cheats\\${game.gcId}.txt`, cheatData);
+                            }
+                            
+                        }
                     });
+
             });
         });
 }

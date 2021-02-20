@@ -1,4 +1,4 @@
-pagesUrl = (pageNum) => { return `https://gamehacking.org/system/dc/all/${pageNum}`; };
+pagesUrl = (consoleType, pageNum) => { return `https://gamehacking.org/system/${consoleType}/all/${pageNum}`; };
 
 gameUrl = (gameId) => { return `https://gamehacking.org/game/${gameId}/?name=&format=ar`; };
 
